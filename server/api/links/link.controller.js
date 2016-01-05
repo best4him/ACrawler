@@ -14,12 +14,18 @@ var Link = require('./link.model.js');
 
 // Get list of things
 exports.index = function(req, res) {
-  Link.find(function (err, links) {
+  getLinks(req.user._id, function (err, links) {
     if(err) { return handleError(res, err); }
     return res.status(200).json(links);
-  });
+  })
 };
-
+exports.getLinks = getLinks;
+function getLinks (userId, callback) {
+  Link.find({'userId': userId}, function (err, links) {
+    if(err) { return callback(err, null); }
+    return callback(null, links);
+  });
+}
 // Get a single thing
 exports.show = function(req, res) {
   Link.findById(req.params.id, function (err, link) {
@@ -31,6 +37,7 @@ exports.show = function(req, res) {
 
 // Creates a new thing in the DB.
 exports.create = function(req, res) {
+  req.body.userId = req.user._id;
   Link.create(req.body, function(err, link) {
     if(err) { return handleError(res, err); }
     return res.status(201).json(link);

@@ -8,5 +8,5 @@ module.exports = {
     uri: 'mongodb://localhost/acrawler-dev'
   },
 
-  seedDB: true
+  seedDB: false
 };
