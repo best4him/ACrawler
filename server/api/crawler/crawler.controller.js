@@ -10,24 +10,16 @@
 'use strict';
 
 var _ = require('lodash');
-var Link = require('./link.model.js');
+var Link = require('./crawler.model.js');
 
 // Get list of things
 exports.index = function(req, res) {
-  getClientLinks(req.user._id, function(err, links) {
+  Link.find(function (err, links) {
     if(err) { return handleError(res, err); }
     return res.status(200).json(links);
-  })
-};
-exports.getClientLinks = getClientLinks;
-function getClientLinks(userId, callback) {
-  Link.find({'userId': userId}, function (err, links) {
-    if(err) {
-      return callback(err, null);
-    }
-   return callback(null, links);
   });
-}
+};
+
 // Get a single thing
 exports.show = function(req, res) {
   Link.findById(req.params.id, function (err, link) {
@@ -39,10 +31,6 @@ exports.show = function(req, res) {
 
 // Creates a new thing in the DB.
 exports.create = function(req, res) {
-  if (!req.user) {
-    res.status(400).send('Please provide the user id');
-  }
-  req.body.userId = req.user._id;
   Link.create(req.body, function(err, link) {
     if(err) { return handleError(res, err); }
     return res.status(201).json(link);
@@ -75,6 +63,65 @@ exports.destroy = function(req, res) {
   });
 };
 
+exports.searchSocial = function(req, res) {
+    console.log("DADADADADADA");
+
+
+  var casper = require('casper').create({
+    verbose: true,
+    logLevel: "info",
+    pageSettings: {
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4'
+    }
+  });
+
+  var url = 'http://twitter.com/';
+
+  var twitterId = req.body.twitterId;
+  var email = req.body.email;
+  var auth = req.body.password;
+  var searchKey = req.body.query;
+
+  casper.start(url  + twitterId, function() {
+    this.echo(this.getTitle());
+    console.log('Starting location is ' + this.getCurrentUrl());
+  });
+
+  casper.then(function() {
+    this.fillSelectors('form.js-front-signin', {
+      'input[name="session[username_or_email]"]': email,
+      'input[name="session[password]"]': auth
+    }, true);
+  });
+
+  casper.then(function() {
+    console.log('Authentication ok, new location is ' + this.getCurrentUrl());
+    // Log Error if we hit the captcha
+    if (/captcha/.test(this.getCurrentUrl())) {
+      console.log('Please login and confirm your captcha.');
+    }
+  });
+
+  casper.then(function() {
+    this.fill('form#global-nav-search', {
+      q: searchKey
+    }, true);
+  });
+
+  casper.waitForSelector('.trends-inner', function() {
+    console.log('.trend.location' + ' is loaded.');
+  });
+
+  casper.then(function() {
+    this.emit('results.log');
+  });
+
+  casper.on('results.log', function() {
+    this.captureSelector('/results/twitPic.png', 'div.stream-container');
+    res.status(200).send("Success");
+  });
+
+};
 function handleError(res, err) {
   return res.status(500).send(err);
 }

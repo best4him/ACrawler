@@ -1,0 +1,44 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <label>Social Networks</label>
+    </div>
+    <div class="col-md-10">
+      <div class="checkbox"  style="display: inline-block">
+        <label>
+          <input type="checkbox" ng-model="twitter">
+          Twitter
+        </label>
+      </div>
+      <div style="display: inline-block" ng-show="twitter">
+        <input type="text" placeholder="Email" ng-model="credentials.email">
+        <input type="password" placeholder="Password" ng-model="credentials.password">
+        <input type="text" placeholder="Twitter ID (optional)" ng-model="credentials.twitterId">
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+    <label>Search</label>
+    </div>
+    <div class="col-md-10">
+      <input type="text" ng-model="query" placeholder="Your query...">
+    </div>
+  </div>
+  <div class="row">
+    <div class="text-center"><button class="btn btn-success" ng-click="startSearch()" >SEARCH</div>
+  </div>
+  <div class="row">
+    DONE
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>ACrawler
+      <a href="https://best4him.com">@best4him</a> |
+      <a href="https://best4him">Issues</a></p>
+  </div>
+</footer>

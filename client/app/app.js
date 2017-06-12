@@ -7,7 +7,8 @@ angular.module('acrawlerApp', [
   'btford.socket-io',
   'ui.router',
   'ui.bootstrap',
-  'timer'
+  'timer',
+  'social'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
     $urlRouterProvider
