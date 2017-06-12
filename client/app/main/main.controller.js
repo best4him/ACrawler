@@ -11,16 +11,16 @@ angular.module('acrawlerApp')
       socket.syncUpdates('link', $scope.awesomeThings);
     });
 
-    $scope.addThing = function() {
-      if($scope.newThing === '') {
+    $scope.addLink = function() {
+      if($scope.link === '') {
         return;
       }
-      $http.post('/api/links', { name: $scope.newThing });
-      $scope.newThing = '';
+      $http.post('/api/links', { name: 'www.' + $scope.link });
+      $scope.link = '';
     };
 
-    $scope.deleteThing = function(thing) {
-      $http.delete('/api/links/' + thing._id);
+    $scope.deleteLink = function(link) {
+      $http.delete('/api/links/' + link._id);
     };
 
     $scope.$on('$destroy', function () {
